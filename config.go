@@ -111,6 +111,13 @@ var (
 	}
 )
 
+func GetWriteMode(mode string) WriteMode {
+	if v, ok := WriteModeNames[mode]; ok {
+		return v
+	}
+	return WriteAsync
+}
+
 func (wm *WriteMode) String() string {
 	return WriteModeStrings[*wm]
 }
@@ -123,20 +130,30 @@ const (
 	RollingBySize RollType = iota + 1
 	// RollingByTime rolls logs by time.
 	RollingByTime
+
+	RollingBySizeStr = "size"
+	RollingByTimeStr = "time"
 )
 
 var (
 	// RollTypeStrings is the map from rolling type to its string representation.
 	RollTypeStrings = map[RollType]string{
-		RollingBySize: "size",
-		RollingByTime: "time",
+		RollingBySize: RollingBySizeStr,
+		RollingByTime: RollingByTimeStr,
 	}
 	// RollTypeNames is the map from string to rolling type.
 	RollTypeNames = map[string]RollType{
-		"size": RollingBySize,
-		"time": RollingByTime,
+		RollingBySizeStr: RollingBySize,
+		RollingByTimeStr: RollingByTime,
 	}
 )
+
+func GetRollingType(rollingType RollType) string {
+	if v, ok := RollTypeStrings[rollingType]; ok {
+		return v
+	}
+	return RollingByTimeStr
+}
 
 func (rt *RollType) String() string {
 	return RollTypeStrings[*rt]

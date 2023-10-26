@@ -1,6 +1,7 @@
 package zap
 
 import (
+	xlog "github.com/oyogames2023/zeus-log"
 	ec "github.com/oyogames2023/zeus-log/errorcode"
 	"github.com/oyogames2023/zeus-log/plugin"
 	"path/filepath"
@@ -24,7 +25,7 @@ func (f *ConsoleWriterFactory) Setup(name string, dec plugin.Decoder) error {
 	if !ok {
 		return ec.ErrInvalidWriterDecoderType
 	}
-	cfg := &OutputConfig{}
+	cfg := &xlog.OutputConfig{}
 	if err := decoder.Decode(&cfg); err != nil {
 		return err
 	}
@@ -44,11 +45,11 @@ func (f *FileWriterFactory) Type() string {
 // Setup starts, loads and register file output writer.
 func (f *FileWriterFactory) Setup(name string, dec plugin.Decoder) error {
 	if dec == nil {
-		return errors.New("file writer decoder empty")
+		return ec.ErrInvalidWriterDecoderObject
 	}
 	decoder, ok := dec.(*Decoder)
 	if !ok {
-		return errors.New("file writer log decoder type invalid")
+		return ec.ErrInvalidWriterDecoderType
 	}
 	if err := f.setupConfig(decoder); err != nil {
 		return err
@@ -57,15 +58,16 @@ func (f *FileWriterFactory) Setup(name string, dec plugin.Decoder) error {
 }
 
 func (f *FileWriterFactory) setupConfig(decoder *Decoder) error {
-	cfg := &OutputConfig{}
+	cfg := &xlog.OutputConfig{}
 	if err := decoder.Decode(&cfg); err != nil {
 		return err
 	}
-	if cfg.WriteConfig.LogPath != "" {
-		cfg.WriteConfig.Filename = filepath.Join(cfg.WriteConfig.LogPath, cfg.WriteConfig.Filename)
+	if cfg.WriterConfig.LogPath != "" {
+		cfg.WriterConfig.FileName = filepath.Join(cfg.WriterConfig.LogPath,
+			cfg.WriterConfig.FileName)
 	}
-	if cfg.WriteConfig.RollType == "" {
-		cfg.WriteConfig.RollType = RollBySize
+	if cfg.WriterConfig.RollType == "" {
+		cfg.WriterConfig.RollType = xlog.GetRollingType(xlog.RollingBySize)
 	}
 
 	core, level, err := newFileCore(cfg)

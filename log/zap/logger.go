@@ -59,7 +59,7 @@ func NewZapLog(c xlog.Config) xlog.Logger {
 	return NewZapLogWithCallerSkip(c, 2)
 }
 
-// NewZapLogWithCallerSkip creates a trpc default Logger from zap.
+// NewZapLogWithCallerSkip creates a default Logger from zap.
 func NewZapLogWithCallerSkip(cfg xlog.Config, callerSkip int) xlog.Logger {
 	var (
 		cores  []zapcore.Core
@@ -134,34 +134,35 @@ func newConsoleCore(c *xlog.OutputConfig) (zapcore.Core, zap.AtomicLevel) {
 func newFileCore(c *xlog.OutputConfig) (zapcore.Core, zap.AtomicLevel, error) {
 	fmt.Println(c.WriterConfig.MaxAge)
 	opts := []rollwriter.Option{
-		rollwriter.WithMaxAge(c.WriteConfig.MaxAge),
-		rollwriter.WithMaxBackups(c.WriteConfig.MaxBackups),
-		rollwriter.WithCompress(c.WriteConfig.Compress),
-		rollwriter.WithMaxSize(c.WriteConfig.MaxSize),
+		rollwriter.WithMaxAge(c.WriterConfig.MaxAge),
+		rollwriter.WithMaxBackups(c.WriterConfig.MaxBackups),
+		rollwriter.WithCompress(c.WriterConfig.Compress),
+		rollwriter.WithMaxSize(c.WriterConfig.MaxSize),
 	}
 	// roll by time.
-	if c.WriteConfig.RollType != RollBySize {
-		opts = append(opts, rollwriter.WithRotationTime(c.WriteConfig.TimeUnit.Format()))
+	if c.WriterConfig.RollType != xlog.RollingBySizeStr {
+		opts = append(opts, rollwriter.WithRotationTime(c.WriterConfig.TimeUnit.Format()))
 	}
-	writer, err := rollwriter.NewRollWriter(c.WriteConfig.Filename, opts...)
+	writer, err := rollwriter.NewRollWriter(c.WriterConfig.FileName, opts...)
 	if err != nil {
 		return nil, zap.AtomicLevel{}, err
 	}
 
 	// write mode.
 	var ws zapcore.WriteSyncer
-	switch m := c.WriteConfig.WriteMode; m {
-	case 0, WriteFast:
+	switch m := xlog.GetWriteMode(c.WriterConfig.WriteMode); m {
+	case 0, xlog.WriteFast:
 		// Use WriteFast as default mode.
 		// It has better performance, discards logs on full and avoid blocking service.
 		ws = rollwriter.NewAsyncRollWriter(writer, rollwriter.WithDropLog(true))
-	case WriteSync:
+	case xlog.WriteSync:
 		ws = zapcore.AddSync(writer)
-	case WriteAsync:
+	case xlog.WriteAsync:
 		ws = rollwriter.NewAsyncRollWriter(writer, rollwriter.WithDropLog(false))
 	default:
 		return nil, zap.AtomicLevel{}, fmt.Errorf("validating WriteMode parameter: got %d, "+
-			"but expect one of WriteFast(%d), WriteAsync(%d), or WriteSync(%d)", m, WriteFast, WriteAsync, WriteSync)
+			"but expect one of WriteFast(%d), WriteAsync(%d), or WriteSync(%d)", m,
+			xlog.WriteFast, xlog.WriteAsync, xlog.WriteSync)
 	}
 
 	// log level.
@@ -249,7 +250,7 @@ func (l *zapLog) With(args ...any) xlog.Logger {
 	return nil
 }
 
-// WithField add user defined fields to Logger. Fields support multiple values.
+// WithFields returns a new logger with key/value paris.
 func (l *zapLog) WithFields(fields ...xlog.Field) xlog.Logger {
 	zapFields := make([]zap.Field, len(fields))
 	for i := range fields {
@@ -458,4 +459,24 @@ func CustomTimeFormat(t time.Time, format string) string {
 // Deprecated: Use https://pkg.go.dev/time#Time.AppendFormat instead.
 func DefaultTimeFormat(t time.Time) []byte {
 	return defaultTimeFormat(t)
+}
+
+// RedirectStdLog redirects std log to trpc logger as log level INFO.
+// After redirection, log flag is zero, the prefix is empty.
+// The returned function may be used to recover log flag and prefix, and redirect output to
+// os.Stderr.
+func RedirectStdLog(logger xlog.Logger) (func(), error) {
+	return RedirectStdLogAt(logger, zap.InfoLevel)
+}
+
+// RedirectStdLogAt redirects std log to trpc logger with a specific level.
+// After redirection, log flag is zero, the prefix is empty.
+// The returned function may be used to recover log flag and prefix, and redirect output to
+// os.Stderr.
+func RedirectStdLogAt(logger xlog.Logger, level zapcore.Level) (func(), error) {
+	if l, ok := logger.(*zapLog); ok {
+		return zap.RedirectStdLogAt(l.logger, level)
+	}
+
+	return nil, fmt.Errorf("log: only supports redirecting std logs to trpc zap logger")
 }

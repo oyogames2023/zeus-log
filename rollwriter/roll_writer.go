@@ -302,7 +302,7 @@ func (w *RollWriter) compressFiles(compress []logInfo) {
 	// Compress log files.
 	for _, f := range compress {
 		fn := filepath.Join(w.currDir, f.Name())
-		w.compressFile(fn, fn+compressSuffix)
+		_ = w.compressFile(fn, fn+compressSuffix)
 	}
 }
 
@@ -365,23 +365,23 @@ func (w *RollWriter) compressFile(src, dst string) (err error) {
 
 	gzf, err := w.os.OpenFile(dst, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
-		f.Close()
+		_ = f.Close()
 		return fmt.Errorf("failed to open compressed file: %v", err)
 	}
 
 	gz := gzip.NewWriter(gzf)
 	defer func() {
-		gz.Close()
+		_ = gz.Close()
 		// Make sure files are closed before removing, or else the removal
 		// will fail on Windows.
-		f.Close()
-		gzf.Close()
+		_ = f.Close()
+		_ = gzf.Close()
 		if err != nil {
-			w.os.Remove(dst)
+			_ = w.os.Remove(dst)
 			err = fmt.Errorf("failed to compress file: %v", err)
 			return
 		}
-		w.os.Remove(src)
+		_ = w.os.Remove(src)
 	}()
 
 	if _, err := io.Copy(gz, f); err != nil {
@@ -437,8 +437,8 @@ func (stdOS) MkdirAll(path string, perm fs.FileMode) error {
 	return os.MkdirAll(path, perm)
 }
 
-func (stdOS) Rename(oldpath string, newpath string) error {
-	return os.Rename(oldpath, newpath)
+func (stdOS) Rename(oldPath string, newPath string) error {
+	return os.Rename(oldPath, newPath)
 }
 
 func (stdOS) Stat(name string) (fs.FileInfo, error) {
