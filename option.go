@@ -1,15 +1,15 @@
 package zeus_log
 
 // Option modifies the options of OptionLogger.
-type Option func(*options)
+type Option func(*Options)
 
-type options struct {
-	skip int
+type Options struct {
+	Skip int
 }
 
 // WithAdditionalCallerSkip adds additional caller skip.
 func WithAdditionalCallerSkip(skip int) Option {
-	return func(o *options) {
-		o.skip = skip
+	return func(o *Options) {
+		o.Skip = skip
 	}
 }

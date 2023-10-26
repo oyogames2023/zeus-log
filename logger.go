@@ -65,49 +65,49 @@ type Logger interface {
 	// arguments when neither is a string.
 	Trace(args ...any)
 	// Tracef formats the message according to the format specifier and logs it at [LevelTrace].
-	Tracef(args ...any)
+	Tracef(format string, args ...any)
 	// Traceln logs a message at [LevelTrace]. Spaces are always added between arguments.
 	Traceln(args ...any)
 	// Debug logs the provided arguments at [LevelDebug]. Spaces are added between
 	// arguments when neither is a string.
 	Debug(args ...any)
 	// Debugf formats the message according to the format specifier and logs it at [LevelDebug].
-	Debugf(args ...any)
+	Debugf(format string, args ...any)
 	// Debugln logs a message at [LevelDebug]. Spaces are always added between arguments.
 	Debugln(args ...any)
 	// Info logs the provided arguments at [LevelInfo]. Spaces are added between
 	// arguments when neither is a string.
 	Info(args ...any)
 	// Infof formats the message according to the format specifier and logs it at [LevelInfo].
-	Infof(args ...any)
+	Infof(format string, args ...any)
 	// Infoln logs a message at [LevelInfo]. Spaces are always added between arguments.
 	Infoln(args ...any)
 	// Warn logs the provided arguments at [LevelWarn]. Spaces are added between
 	// arguments when neither is a string.
 	Warn(args ...any)
 	// Warnf formats the message according to the format specifier and logs it at [LevelWarn].
-	Warnf(args ...any)
+	Warnf(format string, args ...any)
 	// Warnln logs a message at [LevelWarn]. Spaces are always added between arguments.
 	Warnln(args ...any)
 	// Error logs the provided arguments at [LevelError]. Spaces are added between
 	// arguments when neither is a string.
 	Error(args ...any)
 	// Errorf formats the message according to the format specifier and logs it at [LevelError].
-	Errorf(args ...any)
+	Errorf(format string, args ...any)
 	// Errorln logs a message at [LevelError]. Spaces are always added between arguments.
 	Errorln(args ...any)
 	// Fatal logs the provided arguments at [LevelFatal]. Spaces are added between
 	// arguments when neither is a string.
 	Fatal(args ...any)
 	// Fatalf formats the message according to the format specifier and logs it at [LevelFatal].
-	Fatalf(args ...any)
+	Fatalf(format string, args ...any)
 	// Fatalln logs a message at [LevelFatal]. Spaces are always added between arguments.
 	Fatalln(args ...any)
 	// Panic logs the provided arguments at [LevelPanic]. Spaces are added between
 	// arguments when neither is a string.
 	Panic(args ...any)
 	// Panicf formats the message according to the format specifier and logs it at [LevelPanic].
-	Panicf(args ...any)
+	Panicf(format string, args ...any)
 	// Panicln logs a message at [LevelPanic]. Spaces are always added between arguments.
 	Panicln(args ...any)
 

@@ -72,7 +72,7 @@ type FormatConfig struct {
 	// LevelKey is the level key of log output, default as "level".
 	LevelKey string `yaml:"level_key"`
 	// LoggerKey is the logger key of log output, default as "logger".
-	LoggerKey string `yaml:"logger_key"`
+	NameKey string `yaml:"name_key"`
 	// CallerKey is the caller key of log output, default as "caller".
 	CallerKey string `yaml:"caller_key"`
 	// FunctionKey is the function key of log output, default as "", which means
