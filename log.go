@@ -98,6 +98,63 @@ func Traceln(args ...any) {
 	}
 }
 
+// Debug logs to DEBUG log. Arguments are handled in the manner of fmt.Print.
+func Debug(args ...interface{}) {
+	GetDefaultLogger().Debug(args...)
+}
+
+// Debugf logs to DEBUG log. Arguments are handled in the manner of fmt.Printf.
+func Debugf(format string, args ...interface{}) {
+	GetDefaultLogger().Debugf(format, args...)
+}
+
+// Debugf logs to DEBUG log. Arguments are handled in the manner of fmt.Println.
+func Debugln(args ...any) {
+	GetDefaultLogger().Debugln(args...)
+}
+
+// Info logs to INFO log. Arguments are handled in the manner of fmt.Print.
+func Info(args ...interface{}) {
+	GetDefaultLogger().Info(args...)
+}
+
+// Infof logs to INFO log. Arguments are handled in the manner of fmt.Printf.
+func Infof(format string, args ...interface{}) {
+	GetDefaultLogger().Infof(format, args...)
+}
+
+// Warn logs to WARNING log. Arguments are handled in the manner of fmt.Print.
+func Warn(args ...interface{}) {
+	GetDefaultLogger().Warn(args...)
+}
+
+// Warnf logs to WARNING log. Arguments are handled in the manner of fmt.Printf.
+func Warnf(format string, args ...interface{}) {
+	GetDefaultLogger().Warnf(format, args...)
+}
+
+// Error logs to ERROR log. Arguments are handled in the manner of fmt.Print.
+func Error(args ...interface{}) {
+	GetDefaultLogger().Error(args...)
+}
+
+// Errorf logs to ERROR log. Arguments are handled in the manner of fmt.Printf.
+func Errorf(format string, args ...interface{}) {
+	GetDefaultLogger().Errorf(format, args...)
+}
+
+// Fatal logs to ERROR log. Arguments are handled in the manner of fmt.Print.
+// All Fatal logs will exit by calling os.Exit(1).
+// Implementations may also call os.Exit() with a non-zero exit code.
+func Fatal(args ...interface{}) {
+	GetDefaultLogger().Fatal(args...)
+}
+
+// Fatalf logs to ERROR log. Arguments are handled in the manner of fmt.Printf.
+func Fatalf(format string, args ...interface{}) {
+	GetDefaultLogger().Fatalf(format, args...)
+}
+
 // TraceContext logs to TRACE log. Arguments are handled in the manner of fmt.Print.
 func TraceContext(ctx context.Context, args ...any) {
 	if !traceEnabled {
